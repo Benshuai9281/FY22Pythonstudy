@@ -1,3 +1,4 @@
+from numpy import object_
 import pandas as pd
 
 col_author = ["詠み人", "天皇", "姫", "坊主"]
@@ -31,3 +32,6 @@ row_waka = [
 
 df_waka = pd.DataFrame(row_waka, columns=col_waka)
 print(df_waka)
+
+class waka(object):
+  pass
