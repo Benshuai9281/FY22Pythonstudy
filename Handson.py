@@ -393,5 +393,5 @@ if __name__ == "__main__":
     import time
     main_time_start = time.perf_counter()
     main()
-    
+    print("\n===> 正常終了 (処理時間:{:.3f}[sec])".format(time.perf_counter()-main_time_start))
     del main_time_start
