@@ -1,6 +1,7 @@
 import sys
 
 import pandas as pd
+from tensorboard import summary
 
 
 #================================================================
@@ -34,10 +35,10 @@ def main():
             df_q1_result.loc[row_name,col_name] = 0
     for row_name, row in df_excel_data.iterrows():
         sel = row[q1_question]
-        df_q1_result.loc[sel,"選択された数"] += 1
+        df_q1_result.loc[sel,q1_column[0]] += 1
     print("[Q1] "+ q1_question)
     for sel,row in df_q1_result.iterrows():
-        print("・{0}:{1}".format(sel,row.values[0]))
+        print("・{0}:{1}".format(sel,df_q1_result.loc[sel, q1_column[0]]))
     print("")
     #============== Q2 ==============
     q2_question = "【リッカート】下記の季節の好き嫌いを答えて下さい。[B]"
@@ -63,28 +64,35 @@ def main():
         for row_name in col.index:
             df_q3_result.loc[row_name,col_name] = 0
     for row_name, row in df_excel_data.iterrows():
-        for sel in q3_row:
+        for sel in df_q3_result.index:
             if sel in row[q3_question]:
-                df_q3_result.loc[sel,"選択された数"] += 1
+                df_q3_result.loc[sel,q3_column[0]] += 1
     print("[Q3] "+ q3_question)
     for sel,row in df_q3_result.iterrows():
-        print("・{0}:{1}".format(sel,row.values[0]))
+        print("・{0}:{1}".format(sel,df_q3_result.loc[sel, q3_column[0]]))
     print("")
     #------------------------------------------------
     # 数値に変換したDataFrameをExcelファイルに出力
     #------------------------------------------------
-
-
-
-
+    summary_file_path = r"C:\Users\e13971\Desktop\FY22PythonStudy\FY22Pythonstudy\アンケート集計.xlsx"
+    export_excel(_path = summary_file_path, _df = df_q1_result, _sheet_name = "Q1", _header_fillcol = "66ffcc")
+    export_excel(_path = summary_file_path, _df = df_q2_result, _sheet_name = "Q2", _append = True, _header_fillcol = "66ffcc")
+    export_excel(_path = summary_file_path, _df = df_q3_result, _sheet_name = "Q3", _append = True, _header_fillcol = "66ffcc")
     #------------------------------------------------
     # 回答者にメールを送信
     #------------------------------------------------
     import win32com.client
-
-
-
-
+    outlook = win32com.client.Dispatch("outlook.Application")
+    mail = outlook.CreateItem(0)
+    mail.to = "benshuai.guo@konicaminolta.com"
+    mail.subject = "アンケート集計結果"
+    mail.bodyFormat = 2 #HTML
+    mail.body = "アンケート結果を送りします。よろしくお願いします。"
+    mail.Attachments.Add(summary_file_path)
+    if True:
+         mail.display(True)
+    else:
+         mail.Send()
 #================================================================
 # [export_excel] DataFrameをExcelへ出力 
 #   画像を挿入するときは_wbはNoneでなければならない（_pathで指定する）
