@@ -10,33 +10,66 @@ def main():
     #-------------------------------------------------
     # アンケート回答結果のExcelを作業フォルダにコピー
     #-------------------------------------------------
-
-
-
+    file_path_src = r"C:\Users\e13971\Konica Minolta\PythonプログラミングGP - ドキュメント\General\Day1\アンケート\Pythonプログラミング入門_Day1アンケート.xlsx"
+    file_path_dsc = r"C:\Users\e13971\Desktop\FY22PythonStudy\FY22Pythonstudy\Pythonプログラミング入門_Day1アンケート.xlsx"
+    import shutil
+    shutil.copy(file_path_src,file_path_dsc)
     #-------------------------------------------------
     # ファイルからDataFrameにデータを読み込む
     #-------------------------------------------------
-
-
-
+    global df_excel_data
+    df_excel_data = pd.read_excel(file_path_dsc)
+    print("[回答数]{0}".format(len(df_excel_data)))
+    print("")
     #------------------------------------------------
     # アンケートの回答結果を集計・表示
     #------------------------------------------------
     #============== Q1 ==============
-
-
-
-    
+    q1_question = "【単一選択】下記の選択肢の中でスマホを買うときに最も重視する項目どれですか？[A]"
+    q1_row = ["価格", "サイズ", "重さ", "デザイン", "カメラの画質", "画面の解像度"]
+    q1_column = ["選択された数"]
+    df_q1_result = pd.DataFrame(index=q1_row,columns=q1_column)
+    for col_name, col in df_q1_result.iteritems():
+        for row_name in col.index:
+            df_q1_result.loc[row_name,col_name] = 0
+    for row_name, row in df_excel_data.iterrows():
+        sel = row[q1_question]
+        df_q1_result.loc[sel,"選択された数"] += 1
+    print("[Q1] "+ q1_question)
+    for sel,row in df_q1_result.iterrows():
+        print("・{0}:{1}".format(sel,row.values[0]))
+    print("")
     #============== Q2 ==============
-
-
-
-    
+    q2_question = "【リッカート】下記の季節の好き嫌いを答えて下さい。[B]"
+    q2_row = ["真冬[B01]", "春[B02]", "初夏[B03]", "梅雨[B04]", "真夏[B05]", "初秋[B06]", "晩秋[B07]"]
+    q2_column = ["大好き", "わりと好き", "どちらでもない", "あまり好きではない", "嫌い"]
+    df_q2_result = pd.DataFrame(index=q2_row,columns=q2_column)
+    for col_name, col in df_q2_result.iteritems():
+        for row_name in col.index:
+            df_q2_result.loc[row_name,col_name] = 0
+    for row_name, row in df_excel_data.iterrows():
+        for question in q2_row:
+            answer = row[question]
+            df_q2_result.at[question,answer] += 1
+    print("[Q2] "+ q2_question)
+    print(df_q2_result)
+    print("")
     # #============== Q3 ==============
-
-
-
-
+    q3_question = "【複数選択】下記の選択肢の中でテレビを買うときに重視する項目を選んで下さい（複数選択可）[C]"
+    q3_row = ["価格", "音質", "画質", "画面サイズ", "デザイン", "リモコンの使いやすさ", "アフターサービス"]
+    q3_column = ["選択された数"]
+    df_q3_result = pd.DataFrame(index=q3_row,columns=q3_column)
+    for col_name, col in df_q3_result.iteritems():
+        for row_name in col.index:
+            df_q3_result.loc[row_name,col_name] = 0
+    for row_name, row in df_excel_data.iterrows():
+        for sel in q3_row:
+            if sel in row[q3_question]:
+                df_q3_result.loc[sel,"選択された数"] += 1
+    print("[Q3] "+ q3_question)
+    for sel,row in df_q3_result.iterrows():
+        print("・{0}:{1}".format(sel,row.values[0]))
+    print("")
     #------------------------------------------------
     # 数値に変換したDataFrameをExcelファイルに出力
     #------------------------------------------------
